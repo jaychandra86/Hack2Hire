@@ -1,4 +1,4 @@
-import yfinance as yf
+"""import yfinance as yf
 
 # def adj_close(stk, start, end):
 #     data = yf.download(stk, start = start, end = end)
@@ -22,4 +22,12 @@ apl = adj_close_multi(stks, start, end, 'AAPL')
 amz = adj_close_multi(stks, start, end, 'AMZN')
 print("MSFT: ", msft[0])
 print("APL: ", apl[0])
-print("AMZN: ", amz[0])
+print("AMZN: ", amz[0])"""
+
+
+import yfinance as yf
+ticker = yf.Ticker('AMZN')
+aapl_df = ticker.history(start='2015-12-01', end='2020-12-31', period="5y",interval='1mo')
+aapl_df['Close'].plot(title="AMAZON'S stock price").show()
+
+print(aapl_df)

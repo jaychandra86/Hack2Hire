@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request
+
 import json
-import pandas as pd
-import yfinance as yf
-from yahoofinancials import YahooFinancials
+
 import getStk
+
+import cumulative_return
 
 app = Flask(__name__)
 
@@ -22,8 +23,6 @@ def result():
       stk4 = result["stock4"]
       stk5 = result["stock5"]
 
-      benchmark = result["benchmark"]
-
       startDate = result["startdate"]
       endDate = result["enddate"]
 
@@ -41,38 +40,88 @@ def result():
 
 
 
+      #Problem B: Get the monthly returns
       monthly_returns = {}
 
       for stock in stocks:
          l = []
          for i in range(1, len(res[stock])):
-            s = ((res[stock][i] - res[stock][i-1])/res[stock][i-1])*100
 
-            l.append(s)
+            prev = res[stock][i-1]
+            cur = res[stock][i]
+
+            if str(prev) != "nan" and str(cur) != "nan":
+               s = ((cur - prev)/prev)*100
+               l.append(s)
 
          monthly_returns[stock] = l
-      for stock in stocks:
-         ticker = yf.Ticker('stock')
-         aapl_df = ticker.history(start='2015-12-01', end='2020-12-31', period="5y",interval='1mo')
-         aapl_df['Rebased_to_100'].plot(title="visualisation") #rebased need to be added as column
 
-      x = []
-      y = []
-
-      for i in range(len(monthly_returns["TSLA"])):
-         x.append(i)
-
-      import matplotlib.pyplot as plt
-
-      plt.plot(x, monthly_returns["TSLA"])
-
-      plt.savefig("./static/monthly_returns.png")
+      #print(f"Monthly Returns: {monthly_returns}")
 
 
-      print(f"Monthly Returns: {monthly_returns}")
+      #------------------------------------------------------------------------------------#
+      #Problem C, get the max monthly returns and invest in that stock
+      #Momentum strategy
+      capital = 10000
+
+      mr = []
+
+      mr.append(monthly_returns[stk1])
+      mr.append(monthly_returns[stk2])
+      mr.append(monthly_returns[stk3])
+      mr.append(monthly_returns[stk4])
+      mr.append(monthly_returns[stk5])
+
+      import numpy as np
+
+      #uncomment these only when new data is needed
+      #import rebase
+      #import combined
+
+      mon = np.array(mr)
+
+      #print(mon)
+
+      trans = mon
+      ans = 0
+
+      for i in trans:
+         max_monthly_return = max(i)
+
+         if str(max_monthly_return) != "nan":
+            #print(capital)
+            capital = capital*(1+max_monthly_return/100)
 
 
-      return render_template("index.html", data = [res, startDate])
+      #print(f"Momentum strategy Capital after end: {capital-10000}")
+
+
+      #Vanilla strategy
+      cap = [2000, 2000, 2000, 2000, 2000]
+      count = 0
+      for i in trans:
+         count = 0
+         try:
+            for j in i:
+               cap[count] += cap[count]*(1+j/100)
+               count+=1
+
+         except:
+            break
+
+      fin_cap = sum(cap)
+
+
+      #print(f"Vanilla strategy Capital after end: {fin_cap}")
+
+      cr = cumulative_return.getAllValues()
+
+      for i in range(len(cr[2])):
+         cr[2][i] = round(cr[2][i], 2)
+
+      return render_template("index.html", data = [round(capital,2), round(fin_cap,2), cr])
 
 if __name__ == '__main__':
    app.run(debug = True, port=3000)
+
+
