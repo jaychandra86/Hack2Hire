@@ -10,11 +10,11 @@ import yfinance as yf
 # ans = adj_close(stk, start, end)
 # print(ans[0])
 
-def adj_close_multi(stks, start, end, stk):
+def adj_close_multi(stks, start, end):
     data = yf.download(stks, start = start, end = end)
 
 
-    return data['Adj Close'][stk]
+    return data
 
 """
 stks = 'AMZN AAPL MSFT FB TSLA'

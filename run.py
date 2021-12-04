@@ -36,15 +36,20 @@ def result():
       stocks.append(stk4)
       stocks.append(stk5)
 
-      print(stockStr)
-      print(stocks)
+      #print(stockStr)
+      #print(stocks)
+
+      #this gets the stock data
+      stockData = getStock.adj_close_multi(stockStr, startDate, endDate)
+      
 
       res = {}
-      
-      for stk in stocks:
-         res[stk] = (getStock.adj_close_multi(stockStr, startDate, endDate, stk)[0])
+
+      for stock in stocks:
+         res[stock] = stockData["Adj Close"][stock]
 
       print(res)
+
 
       return render_template("index.html", data = [res, startDate])
 
