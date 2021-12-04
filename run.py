@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request
-
 import json
-
+import pandas as pd
+import yfinance as yf
+from yahoofinancials import YahooFinancials
 import getStk
 
 app = Flask(__name__)
@@ -50,8 +51,10 @@ def result():
             l.append(s)
 
          monthly_returns[stock] = l
-
-
+      for stock in stocks:
+         ticker = yf.Ticker('stock')
+         aapl_df = ticker.history(start='2015-12-01', end='2020-12-31', period="5y",interval='1mo')
+         aapl_df['Rebased_to_100'].plot(title="visualisation") #rebased need to be added as column
 
       x = []
       y = []
