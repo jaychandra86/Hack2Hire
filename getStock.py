@@ -16,6 +16,12 @@ def adj_close_multi(stks, start, end):
 
     return data
 
+def get_ndx(start, end):
+    data = yf.download("NDX", start = start, end = end)
+
+
+
+
 """
 stks = 'AMZN AAPL MSFT FB TSLA'
 start = "2020-12-31"

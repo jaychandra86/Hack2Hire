@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request
 
-import getStock
+import json
+
+import getStk
 
 app = Flask(__name__)
 
@@ -24,31 +26,47 @@ def result():
       startDate = result["startdate"]
       endDate = result["enddate"]
 
-      
-
-
-      stockStr = stk1 + " " + stk2 + " " + stk3 + " " + stk4 + " " + stk5
-
       stocks = []
       stocks.append(stk1)
       stocks.append(stk2)
       stocks.append(stk3)
       stocks.append(stk4)
       stocks.append(stk5)
-
-      #print(stockStr)
-      #print(stocks)
-
-      #this gets the stock data
-      stockData = getStock.adj_close_multi(stockStr, startDate, endDate)
       
-
       res = {}
 
       for stock in stocks:
-         res[stock] = stockData["Adj Close"][stock]
+         res[stock] = getStk.getData(stock, startDate, endDate)
 
-      print(res)
+
+
+      monthly_returns = {}
+
+      for stock in stocks:
+         l = []
+         for i in range(1, len(res[stock])):
+            s = ((res[stock][i] - res[stock][i-1])/res[stock][i-1])*100
+
+            l.append(s)
+
+         monthly_returns[stock] = l
+
+
+
+      x = []
+      y = []
+
+      for i in range(len(monthly_returns["TSLA"])):
+         x.append(i)
+
+      import matplotlib.pyplot as plt
+
+      plt.plot(x, monthly_returns["TSLA"])
+
+      plt.savefig("./static/monthly_returns.png")
+
+
+      print(f"Monthly Returns: {monthly_returns}")
 
 
       return render_template("index.html", data = [res, startDate])
