@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+</head>
+<body>
+	<div>
+		<p>Date: {{data[1]}}</p>
+		<ul>
+			{% for item in data[0] %}
+			    
+			    <ul>{{item}} : {{data[0][item]}}</ul>
+			
+			{% endfor %}
+		</ul>
+	</div>
+
+</body>
+</html>
